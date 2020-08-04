@@ -16,7 +16,7 @@ exports.createUser = async (req, res, next) => {
   let user_id;
 
   try {
-    [rows] = await connection.query(query, data);
+    [rows] = await connection.query(query, [[data]]);
     user_id = rows.insertId;
   } catch (e) {
     if (e.errno == 1062) {
