@@ -1,6 +1,6 @@
 const connection = require("../mysql_connection");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // @desc  회원가입
 // @route POST/api/v1/movie/
