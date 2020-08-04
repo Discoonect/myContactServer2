@@ -20,11 +20,11 @@ const auth = async (req, res, next) => {
   let user_id = decoded.id;
 
   let query =
-    "select mu.id, mu.user_name,mu.created_at,mt.token \
-      from movie_token as mt \
-      join movie_user as mu \
-      on mt.user_id = mu.id \
-      where mt.user_id = ? and mt.token = ? ";
+    "select su.id, su.user_name,su.created_at,st.token \
+      from sns_token as st \
+      join sns_user as su \
+      on st.user_id = su.id \
+      where st.user_id = ? and st.token = ? ";
   let data = [user_id, token];
 
   try {

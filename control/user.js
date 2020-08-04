@@ -11,7 +11,7 @@ exports.createUser = async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(password, 8);
 
-  let query = `insert into movie_user(user_name,user_password) values (?,?)`;
+  let query = `insert into sns_user(user_name,user_password) values (?,?)`;
   let data = [name, hashedPassword];
   let user_id;
 
@@ -32,7 +32,7 @@ exports.createUser = async (req, res, next) => {
 
   let token = jwt.sign({ user_id: user_id }, process.env.ACCESS_TOKEN_SECRET);
 
-  query = `insert into movie_token (token, user_id) values(?,?)`;
+  query = `insert into sns_token (token, user_id) values(?,?)`;
   data = [token, user_id];
 
   try {
