@@ -11,12 +11,12 @@ exports.createUser = async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(password, 8);
 
-  let query = `insert into movie_user(user_name,user_password) values ?`;
+  let query = `insert into movie_user(user_name,user_password) values (?,?)`;
   let data = [name, hashedPassword];
   let user_id;
 
   try {
-    [rows] = await connection.query(query, [[data]]);
+    [rows] = await connection.query(query, data);
     user_id = rows.insertId;
   } catch (e) {
     if (e.errno == 1062) {
