@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
   }
 
   try {
-    token = req.header("Authorization");
+    token = req.header("Authorization").replace("Bearer ", "");
   } catch (e) {
     res.status(401).json({ error: e, message: "Please authenticate!" });
     return;
