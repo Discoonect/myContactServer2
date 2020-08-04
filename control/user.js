@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 // @desc  회원가입
-// @route POST/api/v1/movie/
+// @route POST/api/v1/user/
 // @parameters   name, password
 exports.createUser = async (req, res, next) => {
   let name = req.body.name;
@@ -43,3 +43,44 @@ exports.createUser = async (req, res, next) => {
     return;
   }
 };
+
+// 로그인
+// POST/api/v1/user/login
+// name, password
+exports.loginUser = async (req, res, next) => {
+    let name = req.body.name;
+    let password = req.body.password;
+  
+    let query = `select * from sns_user where user_name = ?`;
+    let data = [name];
+  
+    try {
+      [rows] = await connection.query(query, data);
+      let storedPassword = rows[0].user_password;
+  
+      let match = await bcrypt.compare(password, storedPassword);
+  
+      if (!match) {
+        res
+          .status(400)
+          .json({ success: false, result: match, message: "비밀번호 틀림" });
+        return;
+      }
+  
+      let token = jwt.sign({ id: rows[0].id }, process.env.ACCESS_TOKEN_SECRET);
+      query = `insert into movie_token(user_id,token) values(?,?)`;
+      data = [rows[0].id, token];
+  
+      try {
+        [result] = await connection.query(query, data);
+        res.status(200).json({ success: true, result: match, token: token });
+      } catch (e) {
+        res
+          .status(502)
+          .json({ success: false, error: e, message: "토큰저장실패" });
+        return;
+      }
+    } catch (e) {
+      res.status(500).json({ success: false, error: e });
+    }
+  };
