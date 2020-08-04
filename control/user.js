@@ -84,3 +84,21 @@ exports.loginUser = async (req, res, next) => {
     res.status(500).json({ success: false, error: e });
   }
 };
+
+// @desc     로그아웃   api : db에서 해당유저의 현재 토큰값을 삭제
+// @url      POST /api/v1/user/allLogout
+// @request
+// @response
+exports.allLogout = async (req, res, next) => {
+  let user_id = req.user.id;
+  let query = `delete from sns_token where user_id = ${user_id}`;
+
+  console.log(user_id);
+  try {
+    [result] = await connection.query(query);
+    console.log(result);
+    res.status(200).json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e });
+  }
+};
