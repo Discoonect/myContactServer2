@@ -3,13 +3,14 @@ const connection = require("../mysql_connection");
 
 const auth = async (req, res, next) => {
   let token;
-  
+
   try {
     token = req.header("Authorization").replace("Bearer ", "");
   } catch (e) {
     res.status(401).json({ error: e, message: "Please authenticate!" });
     return;
   }
+
   const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
   let user_id = decoded.id;
@@ -24,13 +25,8 @@ const auth = async (req, res, next) => {
 
   try {
     [rows] = await connection.query(query, data);
-    if (rows.length == 0) {
-      res.status(401).json({ error: "Please authenticate!" });
-    } else {
-      req.user = rows[0];
-
-      next();
-    }
+    req.user = rows[0];
+    next();
   } catch (e) {
     res.status(401).json({ error: "Please authenticate!" });
   }
