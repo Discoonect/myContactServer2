@@ -2,15 +2,10 @@ const jwt = require("jsonwebtoken");
 const connection = require("../mysql_connection");
 
 const auth = async (req, res, next) => {
-  let token = req.header("Authorization");
-
-  if (!token) {
-    res.status(401).json({ error: "not token" });
-    return;
-  }
-
+  let token;
+  
   try {
-    token = token.replace("Bearer ", "");
+    token = req.header("Authorization").replace("Bearer ", "");
   } catch (e) {
     res.status(401).json({ error: e, message: "Please authenticate!" });
     return;
