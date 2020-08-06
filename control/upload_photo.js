@@ -5,6 +5,7 @@ const path = require("path");
 // req.files.사진
 exports.photoUpload = async (req, res, next) => {
   let user_id = req.user.id;
+  let comment = req.body.comment;
 
   if (!user_id || !req.files) {
     res.status(400).json({ message: "로그인 또는 사진을 업로드 해주세요." });
@@ -32,8 +33,8 @@ exports.photoUpload = async (req, res, next) => {
       return;
     }
   });
-  let query = `insert into sns_photo(photo,user_id) values(?,?)`;
-  let data = [photo.name, user_id];
+  let query = `insert into sns_photo(photo,user_id,comment) values(?,?,?)`;
+  let data = [photo.name, user_id, comment];
 
   try {
     [result] = await connection.query(query, data);
