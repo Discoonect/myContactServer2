@@ -8,6 +8,7 @@ const morgan = require("morgan");
 
 const user = require("./route/user");
 const uploads = require("./route/uploads");
+const follow = require("./route/follow");
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use(morgan("dev"));
 
 app.use("/api/v1/user", user);
 app.use("/api/v1/upload", uploads);
+app.use("/api/v1/follow", follow);
 
 const PORT = process.env.PORT;
 
