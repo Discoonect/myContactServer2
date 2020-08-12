@@ -33,6 +33,7 @@ exports.photoUpload = async (req, res, next) => {
       return;
     }
   });
+  
   let query = `insert into sns_photo(photo,user_id,comment) values(?,?,?)`;
   let data = [photo.name, user_id, comment];
 
