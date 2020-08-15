@@ -33,7 +33,7 @@ exports.photoUpload = async (req, res, next) => {
       return;
     }
   });
-  
+
   let query = `insert into sns_photo(photo,user_id,comment) values(?,?,?)`;
   let data = [photo.name, user_id, comment];
 
@@ -45,7 +45,11 @@ exports.photoUpload = async (req, res, next) => {
   }
 };
 
-// 내가 쓴 게시글
+// @desc    내가 쓴 포스트 정보 가져오기 (25개씩)
+// @route   GET /api/v1/posts/me?offset=0
+// @request user_id(auth), offset
+// @response  success, items[], cnt
+
 exports.getPhoto = async (req, res, next) => {
   let user_id = req.user.id;
   let offset = req.query.offset;
@@ -56,19 +60,21 @@ exports.getPhoto = async (req, res, next) => {
     return;
   }
 
-  let query = `select * from sns_photo where user_id =? limit ?,?`;
+  let query = `select * from sns_photo where user_id =? limit ?,25`;
   let data = [user_id, Number(offset), Number(limit)];
 
   try {
     [rows] = await connection.query(query, data);
-    res.status(200).json({ success: true, items: rows });
+    res.status(200).json({ success: true, items: rows, cnt: rows.length });
   } catch (e) {
     res.status(500).json({ success: false });
   }
 };
 
-// 포스팅 업데이트
-// PUT  /api/v1/upload:post_id
+// @desc    포스팅 수정하기
+// @route   PUT /api/v1/posts/:post_id
+// @request user_id(auth), photo, content
+// @response  success
 exports.updatePhoto = async (req, res, next) => {
   let post_id = req.params.post_id;
   let user_id = req.user.id;
@@ -157,6 +163,10 @@ exports.deletePost = async (req, res, next) => {
     return;
   }
   // 이 사람의 포스팅이 맞는지 확인하는 코드 // 끝.
+  fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${hoto_url}`, function (err) {
+    if (err) console.log("error : " + err);
+    console.log("file deleted : " + photo_url);
+  });
 
   query = "delete from sns_photo where id = ? ";
   data = [post_id];
@@ -178,9 +188,8 @@ exports.deletePost = async (req, res, next) => {
 exports.getFriendsPost = async (req, res, next) => {
   let user_id = req.user.id;
   let offset = req.query.offset;
-  let limit = req.query.limit;
 
-  if (!user_id || !offset || !limit) {
+  if (!user_id || !offset) {
     res.status(400).json();
     return;
   }
@@ -192,9 +201,9 @@ exports.getFriendsPost = async (req, res, next) => {
   on sf.friend_user_id = sp.user_id \
   where sf.user_id = ? \
   order by sp.created_at desc \
-  limit ?, ? ";
+  limit ?, 25 ";
 
-  let data = [user_id, Number(offset), Number(limit)];
+  let data = [user_id, Number(offset)];
 
   try {
     [rows] = await connection.query(query, data);
